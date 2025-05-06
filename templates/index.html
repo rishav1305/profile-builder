@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Builder AI Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #4a6fdc;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #4a6fdc;
+            border-color: #4a6fdc;
+        }
+        .btn-primary:hover {
+            background-color: #3a5fc9;
+            border-color: #3a5fc9;
+        }
+        .status-indicator {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-ready {
+            background-color: #28a745;
+        }
+        .status-loading {
+            background-color: #ffc107;
+            animation: blink 1s infinite;
+        }
+        .status-error {
+            background-color: #dc3545;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .platform-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .platform-card:hover {
+            transform: translateY(-5px);
+        }
+        .platform-card.selected {
+            border: 2px solid #4a6fdc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col text-center">
+                <h1 class="display-4">Profile Builder AI Agent</h1>
+                <p class="lead">Automatically fill your professional profiles using AI and your portfolio data</p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>System Status</span>
+                        <div id="status-container">
+                            <span class="status-indicator status-loading" id="status-indicator"></span>
+                            <span id="status-text">Checking status...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Ollama Model: <span id="model-name">Checking...</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">Extract Portfolio Data</div>
+                    <div class="card-body">
+                        <form id="portfolio-form">
+                            <div class="mb-3">
+                                <label for="portfolio-url" class="form-label">Portfolio URL</label>
+                                <input type="url" class="form-control" id="portfolio-url" value="https://rishavchatterjee.vercel.app/" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="extract-btn">Extract Data</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 d-none" id="portfolio-data-section">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header">Portfolio Data</div>
+                    <div class="card-body">
+                        <div class="accordion" id="portfolioAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basic-info">
+                                        Basic Information
+                                    </button>
+                                </h2>
+                                <div id="basic-info" class="accordion-collapse collapse show" data-bs-parent="#portfolioAccordion">
+                                    <div class="accordion-body" id="basic-info-content">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#about">
+                                        About
+                                    </button>
+                                </h2>
+                                <div id="about" class="accordion-collapse collapse" data-bs-parent="#portfolioAccordion">
+                                    <div class="accordion-body" id="about-content">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#experience">
+                                        Experience
+                                    </button>
+                                </h2>
+                                <div id="experience" class="accordion-collapse collapse" data-bs-parent="#portfolioAccordion">
+                                    <div class="accordion-body" id="experience-content">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#education">
+                                        Education
+                                    </button>
+                                </h2>
+                                <div id="education" class="accordion-collapse collapse" data-bs-parent="#portfolioAccordion">
+                                    <div class="accordion-body" id="education-content">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#skills">
+                                        Skills
+                                    </button>
+                                </h2>
+                                <div id="skills" class="accordion-collapse collapse" data-bs-parent="#portfolioAccordion">
+                                    <div class="accordion-body" id="skills-content">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 d-none" id="platforms-section">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header">Select Platform</div>
+                    <div class="card-body">
+                        <div class="row" id="platforms-container">
+                            <!-- Platforms will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 d-none" id="credentials-section">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">Platform Credentials (Optional)</div>
+                    <div class="card-body">
+                        <p class="card-text mb-3">If you provide credentials, the profile will be automatically filled on the platform. Otherwise, the content will be generated for manual entry.</p>
+                        <form id="credentials-form">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username/Email</label>
+                                <input type="text" class="form-control" id="username">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password">
+                                <div class="form-text">Your credentials are used only for automation and are not stored.</div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 d-none" id="build-section">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">Build Profile</div>
+                    <div class="card-body text-center">
+                        <button class="btn btn-primary btn-lg" id="build-btn">Generate & Build Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 d-none" id="results-section">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header">Generated Profile Content</div>
+                    <div class="card-body">
+                        <div id="results-container">
+                            <!-- Results will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables to store data
+        let portfolioData = null;
+        let selectedPlatform = null;
+
+        // Check system status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStatus();
+            loadPlatforms();
+        });
+
+        // Check Ollama status
+        function checkStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const modelName = document.getElementById('model-name');
+            
+            statusIndicator.className = 'status-indicator status-loading';
+            statusText.textContent = 'Checking status...';
+
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ready') {
+                        statusIndicator.className = 'status-indicator status-ready';
+                        statusText.textContent = 'Ready';
+                        modelName.textContent = data.model;
+                    } else {
+                        statusIndicator.className = 'status-indicator status-error';
+                        statusText.textContent = 'Not Ready';
+                        modelName.textContent = data.message || 'Model not loaded';
+                        alert('The system is not ready. Please check the Ollama service.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking status:', error);
+                    statusIndicator.className = 'status-indicator status-error';
+                    statusText.textContent = 'Error';
+                    modelName.textContent = 'Connection error';
+                });
+        }
+
+        // Load available platforms
+        function loadPlatforms() {
+            fetch('/platforms')
+                .then(response => response.json())
+                .then(data => {
+                    const platformsContainer = document.getElementById('platforms-container');
+                    platformsContainer.innerHTML = '';
+                    
+                    data.platforms.forEach(platform => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4 mb-3';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'card platform-card';
+                        card.dataset.platformId = platform.id;
+                        if (!platform.supported) {
+                            card.classList.add('text-muted');
+                        }
+                        
+                        const cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+                        
+                        const title = document.createElement('h5');
+                        title.className = 'card-title';
+                        title.textContent = platform.name;
+                        
+                        const description = document.createElement('p');
+                        description.className = 'card-text';
+                        description.textContent = platform.description;
+                        
+                        const badge = document.createElement('span');
+                        badge.className = platform.supported ? 'badge bg-success' : 'badge bg-secondary';
+                        badge.textContent = platform.supported ? 'Supported' : 'Coming Soon';
+                        
+                        cardBody.appendChild(title);
+                        cardBody.appendChild(description);
+                        cardBody.appendChild(badge);
+                        card.appendChild(cardBody);
+                        col.appendChild(card);
+                        platformsContainer.appendChild(col);
+                        
+                        if (platform.supported) {
+                            card.addEventListener('click', () => selectPlatform(platform.id, card));
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading platforms:', error));
+        }
+
+        // Handle portfolio form submission
+        document.getElementById('portfolio-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const portfolioUrl = document.getElementById('portfolio-url').value;
+            const extractBtn = document.getElementById('extract-btn');
+            extractBtn.disabled = true;
+            extractBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Extracting...';
+            
+            const formData = new FormData();
+            formData.append('portfolio_url', portfolioUrl);
+            
+            fetch('/extract', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        return;
+                    }
+                    
+                    portfolioData = data.data;
+                    displayPortfolioData(portfolioData);
+                    document.getElementById('portfolio-data-section').classList.remove('d-none');
+                    document.getElementById('platforms-section').classList.remove('d-none');
+                })
+                .catch(error => {
+                    console.error('Error extracting data:', error);
+                    alert('An error occurred while extracting portfolio data.');
+                })
+                .finally(() => {
+                    extractBtn.disabled = false;
+                    extractBtn.textContent = 'Extract Data';
+                });
+        });
+
+        // Display portfolio data in the UI
+        function displayPortfolioData(data) {
+            // Basic Info
+            const basicInfoContent = document.getElementById('basic-info-content');
+            basicInfoContent.innerHTML = `
+                <p><strong>Name:</strong> ${data.basic_info.name}</p>
+                <p><strong>Title:</strong> ${data.basic_info.title}</p>
+                <p><strong>Email:</strong> ${data.basic_info.email}</p>
+                <p><strong>Location:</strong> ${data.basic_info.location}</p>
+            `;
+            
+            // About
+            const aboutContent = document.getElementById('about-content');
+            aboutContent.innerHTML = `
+                <p>${data.about.summary}</p>
+                <h6>Highlights:</h6>
+                <ul>
+                    ${data.about.highlights.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            `;
+            
+            // Experience
+            const experienceContent = document.getElementById('experience-content');
+            experienceContent.innerHTML = data.experience.map(exp => `
+                <div class="mb-4">
+                    <h5>${exp.title} at ${exp.company}</h5>
+                    <p class="text-muted">${exp.duration} | ${exp.location}</p>
+                    <h6>Achievements:</h6>
+                    <ul>
+                        ${exp.achievements.map(achievement => `<li>${achievement}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+            
+            // Education
+            const educationContent = document.getElementById('education-content');
+            educationContent.innerHTML = data.education.map(edu => `
+                <div class="mb-3">
+                    <h5>${edu.institution}</h5>
+                    <p>${edu.degree} in ${edu.field}</p>
+                    <p class="text-muted">${edu.duration} | ${edu.location}</p>
+                </div>
+            `).join('');
+            
+            // Skills
+            const skillsContent = document.getElementById('skills-content');
+            skillsContent.innerHTML = `
+                <h6>Technical Skills:</h6>
+                <div class="mb-3">
+                    ${data.skills.technical.map(skill => `<span class="badge bg-light text-dark me-2 mb-2">${skill}</span>`).join('')}
+                </div>
+                <h6>Soft Skills:</h6>
+                <div>
+                    ${data.skills.soft.map(skill => `<span class="badge bg-light text-dark me-2 mb-2">${skill}</span>`).join('')}
+                </div>
+            `;
+        }
+
+        // Handle platform selection
+        function selectPlatform(platformId, card) {
+            // Remove selection from all platforms
+            document.querySelectorAll('.platform-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to the clicked platform
+            card.classList.add('selected');
+            selectedPlatform = platformId;
+            
+            // Show credentials and build sections
+            document.getElementById('credentials-section').classList.remove('d-none');
+            document.getElementById('build-section').classList.remove('d-none');
+        }
+
+        // Handle build profile button click
+        document.getElementById('build-btn').addEventListener('click', function() {
+            if (!portfolioData || !selectedPlatform) {
+                alert('Please extract portfolio data and select a platform first.');
+                return;
+            }
+            
+            const buildBtn = document.getElementById('build-btn');
+            buildBtn.disabled = true;
+            buildBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Building...';
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const requestData = {
+                platform: selectedPlatform,
+                portfolio_data: portfolioData,
+                credentials: {
+                    username: username,
+                    password: password
+                }
+            };
+            
+            fetch('/build_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        return;
+                    }
+                    
+                    displayResults(data.result);
+                    document.getElementById('results-section').classList.remove('d-none');
+                    // Scroll to results
+                    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error('Error building profile:', error);
+                    alert('An error occurred while building the profile.');
+                })
+                .finally(() => {
+                    buildBtn.disabled = false;
+                    buildBtn.textContent = 'Generate & Build Profile';
+                });
+        });
+
+        // Display generated profile results
+        function displayResults(result) {
+            const resultsContainer = document.getElementById('results-container');
+            
+            let html = `
+                <div class="alert ${result.status === 'profile_updated' ? 'alert-success' : 'alert-info'}" role="alert">
+                    ${result.status === 'profile_updated' ? 
+                        'Your profile has been successfully updated on the platform!' : 
+                        'Profile content has been generated. You can copy and paste it into your profile.'}
+                </div>
+                <div class="mb-4">
+                    <h5>Professional Title</h5>
+                    <div class="p-3 bg-light rounded">
+                        <p>${result.title}</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h5>Overview</h5>
+                    <div class="p-3 bg-light rounded">
+                        <p>${result.overview.replace(/\n/g, '<br>')}</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h5>Skills</h5>
+                    <div class="p-3 bg-light rounded">
+                        ${result.skills.map(skill => `<span class="badge bg-primary me-2 mb-2">${skill}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h5>Suggested Hourly Rate</h5>
+                    <div class="p-3 bg-light rounded">
+                        <p>$${result.hourly_rate}/hr</p>
+                    </div>
+                </div>
+            `;
+            
+            if (result.error) {
+                html += `
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Note:</strong> ${result.error}
+                    </div>
+                `;
+            }
+            
+            resultsContainer.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
