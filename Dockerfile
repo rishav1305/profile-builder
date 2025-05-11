@@ -31,7 +31,7 @@ EXPOSE 8080
 RUN echo '#!/bin/bash\n\
 ollama serve &\n\
 sleep 5\n\
-ollama pull deepseek-coder:latest\n\
+ollama pull deepseek-r1:latest\n\
 python app.py' > /app/start.sh && chmod +x /app/start.sh
 
 # Command to start the application

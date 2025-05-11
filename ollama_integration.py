@@ -11,7 +11,7 @@ class OllamaClient:
     Client for interacting with Ollama API to generate text using the deepseek model.
     """
     
-    def __init__(self, model="deepseek-coder", base_url="http://localhost:11434"):
+    def __init__(self, model="deepseek-r1", base_url="http://localhost:11434"):
         """Initialize the Ollama client."""
         self.model = model
         self.base_url = base_url
@@ -145,12 +145,12 @@ class OllamaClient:
 
 
 if __name__ == "__main__":
-    # Test the Ollama client
-    client = OllamaClient()
+    # Test the Ollama client with deepseek-r1
+    client = OllamaClient(model="deepseek-r1")
     response = client.generate("Tell me a short joke about programming")
-    print(f"Generated response: {response}")
+    print(f"Generated response from deepseek-r1: {response}")
     
     chat_response = client.chat([
         {"role": "user", "content": "What are the main benefits of using Docker?"}
     ])
-    print(f"Chat response: {chat_response}")
+    print(f"Chat response from deepseek-r1: {chat_response}")

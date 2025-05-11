@@ -45,13 +45,19 @@ def build_profile():
 @app.route('/platforms')
 def get_platforms():
     """Return the list of supported platforms."""
-    # In the POC, we're starting with just Upwork
+    # Updated to include both Upwork and LinkedIn
     return jsonify({
         'platforms': [
             {
                 'id': 'upwork',
                 'name': 'Upwork',
                 'description': 'One of the largest freelancing platforms with opportunities across numerous fields',
+                'supported': True
+            },
+            {
+                'id': 'linkedin',
+                'name': 'LinkedIn',
+                'description': 'Professional networking platform ideal for job searching and professional branding',
                 'supported': True
             }
         ]
@@ -64,9 +70,9 @@ def get_status():
     try:
         # Check if Ollama is running with the deepseek model
         result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
-        if 'deepseek-coder' in result.stdout:
-            return jsonify({'status': 'ready', 'model': 'deepseek-coder'})
-        return jsonify({'status': 'model_not_found', 'message': 'deepseek-coder model not found'})
+        if 'deepseek-r1' in result.stdout:
+            return jsonify({'status': 'ready', 'model': 'deepseek-r1'})
+        return jsonify({'status': 'model_not_found', 'message': 'deepseek-r1 model not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 

@@ -4,22 +4,22 @@ An AI-powered tool that automatically fills in your professional profiles across
 
 ## Project Overview
 
-This project creates a Docker container with Python, Git, and Ollama to run a local AI agent. The agent extracts information from your portfolio and automatically fills out profiles on remote work platforms like Upwork, Fiverr, and other job boards.
+This project creates a Docker container with Python, Git, and Ollama to run a local AI agent. The agent extracts information from your portfolio and automatically fills out profiles on remote work platforms like Upwork, LinkedIn, and other job boards.
 
 ## Features
 
 - **Docker Environment**: Containerized setup with Python, Git, and Ollama
-- **Local LLM**: Uses Ollama with the deepseek model for AI tasks without sending data to external APIs
+- **Local LLM**: Uses Ollama with the deepseek-r1 model for AI tasks without sending data to external APIs
 - **Profile Automation**: Automatic form filling for remote work platforms
 - **Data Extraction**: Uses your existing portfolio as the source of professional information
-- **First Platform Support**: Initially targets Upwork (with more platforms to be added)
+- **Platform Support**: Currently supports Upwork and LinkedIn professional profiles
 
 ## Prerequisites
 
-- Docker installed on your system
-- Internet connection for initial setup (downloading Docker images and the Ollama model)
+- Python 3.8+ installed on your system
+- Internet connection for initial setup (downloading packages and the Ollama model)
 
-## Quick Start
+## Quick Start - Local Setup
 
 1. Clone this repository:
    ```
@@ -27,12 +27,34 @@ This project creates a Docker container with Python, Git, and Ollama to run a lo
    cd profile-builder
    ```
 
-2. Build the Docker image:
+2. Run the local setup script:
+   ```
+   ./setup_local.sh
+   ```
+   This will:
+   - Create a Python virtual environment
+   - Install required dependencies
+   - Install Ollama (if not already installed)
+   - Pull the deepseek-r1 model
+
+3. Start the application:
+   ```
+   ./run_local.sh
+   ```
+
+4. Access the web interface:
+   ```
+   http://localhost:8080
+   ```
+
+## Quick Start - Docker Setup (Alternative)
+
+1. Build the Docker image:
    ```
    docker build -t profile-builder .
    ```
 
-3. Run the container:
+2. Run the container:
    ```
    docker run -p 8080:8080 profile-builder
    ```
@@ -61,7 +83,8 @@ The agent follows this workflow:
 
 ### Currently Supported Platforms
 
-- **Upwork** (POC): Automatic profile creation using your professional data
+- **Upwork**: Automatic profile creation using your professional data
+- **LinkedIn**: Comprehensive profile optimization including headline, summary, and skills
 
 ## Implementation Details
 
@@ -97,6 +120,8 @@ The agent extracts the following information from your portfolio:
 - Enhanced customization of profiles per platform
 - Automated profile updating from portfolio changes
 - Support for multiple portfolio sources
+- LinkedIn endorsements and recommendation management
+- Experience and education section automation
 
 ## License
 
