@@ -1,0 +1,97 @@
+{
+  "basic_info": {
+    "name": "Search code, repositories, users, issues, pull requests...",
+    "email": "rishavchatterjee2024@gmail.com",
+    "title": "Navigation Menu",
+    "location": "India"
+  },
+  "about": {
+    "summary": "GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.",
+    "highlights": [
+      "Technology Leader with expertise in engineering scalable cloud-based solutions",
+      "Experience with AI to boost productivity and drive innovation",
+      "Specializes in designing scalable data solutions that align tech with business goals"
+    ]
+  },
+  "experience": [
+    {
+      "title": "Technology Lead",
+      "company": "Bitwise Solutions Pvt Ltd",
+      "duration": "Dec 2022 - Present",
+      "location": "Pune, Maharashtra",
+      "achievements": [
+        "Initiated B2B analytics reporting with key insights through Funnel Analysis, Forecasting, and more",
+        "Optimized Programmatic Advertisers pipeline, reducing processing time by 60%",
+        "Executed NetSuite invoice data integration with Salesforce",
+        "Led migration from Qlik Sense to Python for Datorama nPrinting",
+        "Implemented data-driven decision making across business units leading to 25% increase in revenue",
+        "Architected cloud-based data solutions that reduced infrastructure costs by 30%"
+      ]
+    },
+    {
+      "title": "Senior Data Engineer",
+      "company": "Novartis Healthcare Pvt Ltd",
+      "duration": "May 2020 - Dec 2022",
+      "location": "Hyderabad, Telangana",
+      "achievements": [
+        "Migrated from HIVE to Snowflake, increasing pipeline performance by 60%",
+        "Orchestrated jobs using Apache Airflow and Alteryx, improving system speed by 40%",
+        "Maintained 99.5% data accuracy with 9.5/10 stakeholder satisfaction",
+        "Led team of 3, collaborating with 15+ data vendors and 10+ brand leaders"
+      ]
+    },
+    {
+      "title": "Data Engineer",
+      "company": "Polestar Solutions and Services",
+      "duration": "Jun 2018 - Apr 2020",
+      "location": "Noida, Uttar Pradesh",
+      "achievements": [
+        "Worked with Jubilant FoodWorks to reduce production pipeline execution time by 66%",
+        "Migrated IndiaMART's on-premises system to AWS",
+        "Delivered automated prediction model workflows for Reckitt Benckiser using Azure Databricks",
+        "Successfully started cloud-based services as a new vertical for the organization"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Delhi Technological University (DTU)",
+      "degree": "Bachelor's Degree",
+      "field": "Environmental Engineering",
+      "duration": "Aug 2014 - May 2018",
+      "location": "Rohini, Delhi"
+    }
+  ],
+  "skills": {
+    "technical": [
+      "SQL",
+      "Python",
+      "Data Warehouse",
+      "ETL Tools",
+      "Cloud Services",
+      "Analytical Tools",
+      "Project Management",
+      "Big Data Tools"
+    ],
+    "soft": [
+      "Communication",
+      "Leadership",
+      "Problem Solving"
+    ]
+  },
+  "testimonials": [
+    {
+      "name": "Ivan Cheklin",
+      "position": "BI Leader",
+      "company": "The Weather Company",
+      "testimonial": "Rishav is an exceptional talent who consistently delivers high-quality solutions. His technical expertise and problem-solving skills make him an invaluable asset to any team."
+    },
+    {
+      "name": "Sylvia Ho",
+      "position": "Principal Data Scientist",
+      "company": "The Weather Company",
+      "testimonial": "Working with Rishav was a game-changer for our data visualization projects. His innovative approach and attention to detail resulted in solutions that exceeded our expectations."
+    }
+  ],
+  "last_updated": "2025-05-18T10:03:03.633092"
+}

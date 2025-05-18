@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Updates Log - Profile Builder AI Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #4a6fdc;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #4a6fdc;
+            border-color: #4a6fdc;
+        }
+        .btn-primary:hover {
+            background-color: #3a5fc9;
+            border-color: #3a5fc9;
+        }
+        .platform-badge {
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 0.25rem;
+        }
+        .platform-linkedin {
+            background-color: #0a66c2;
+            color: white;
+        }
+        .platform-upwork {
+            background-color: #14a800;
+            color: white;
+        }
+        .log-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .log-card:hover {
+            transform: translateY(-5px);
+        }
+        .diff-removed {
+            background-color: #ffecec;
+            color: #bd2c00;
+            text-decoration: line-through;
+        }
+        .diff-added {
+            background-color: #eaffea;
+            color: #55a532;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline:before {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e9ecef;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -30px;
+            top: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #4a6fdc;
+            border: 4px solid #f8f9fa;
+        }
+        .skills-list span {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col text-center">
+                <h1 class="display-4">Profile Updates Log</h1>
+                <p class="lead">View all AI-assisted updates made to your professional profiles</p>
+                <a href="/" class="btn btn-outline-primary">← Back to Profile Builder</a>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Filter Logs</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <select id="platform-filter" class="form-select">
+                                    <option value="">All Platforms</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="upwork">Upwork</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="limit-filter" class="form-select">
+                                    <option value="10">Last 10 Updates</option>
+                                    <option value="25">Last 25 Updates</option>
+                                    <option value="50">Last 50 Updates</option>
+                                    <option value="100">Last 100 Updates</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="filter-btn" class="btn btn-primary w-100">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="timeline" id="logs-container">
+                    {% if logs %}
+                        {% for log in logs %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="card log-card mb-3" data-log-id="{{ loop.index }}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <span class="platform-badge platform-{{ log.platform }}">{{ log.platform }}</span>
+                                            Profile Update
+                                        </span>
+                                        <span class="text-light">{{ log.timestamp | datetime }}</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{{ log.profile_url }}" target="_blank">
+                                                {{ log.profile_url }}
+                                                <i class="bi bi-box-arrow-up-right"></i>
+                                            </a>
+                                        </h5>
+                                        
+                                        {% if log.headline %}
+                                        <div class="mb-3">
+                                            <h6>Headline Updated:</h6>
+                                            <div class="diff-removed p-2 mb-1">{{ log.headline.before }}</div>
+                                            <div class="diff-added p-2">{{ log.headline.after }}</div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if log.about %}
+                                        <div class="mb-3">
+                                            <h6>About Section Updated</h6>
+                                            <button class="btn btn-sm btn-outline-secondary" 
+                                                   data-bs-toggle="collapse" 
+                                                   data-bs-target="#about-diff-{{ loop.index }}">
+                                                Show Changes
+                                            </button>
+                                            <div class="collapse mt-2" id="about-diff-{{ loop.index }}">
+                                                <div class="diff-removed p-2 mb-1">{{ log.about.before }}</div>
+                                                <div class="diff-added p-2">{{ log.about.after }}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if log.skills_added %}
+                                        <div class="mb-3">
+                                            <h6>Skills Added:</h6>
+                                            <div class="skills-list">
+                                                {% for skill in log.skills_added %}
+                                                <span class="badge bg-success">{{ skill }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info text-center">
+                            No profile updates found. Use the Profile Builder to update your profiles first.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize filters with URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const platformParam = urlParams.get('platform');
+            const limitParam = urlParams.get('limit');
+            
+            if (platformParam) {
+                document.getElementById('platform-filter').value = platformParam;
+            }
+            
+            if (limitParam) {
+                document.getElementById('limit-filter').value = limitParam;
+            }
+            
+            // Handle filter button click
+            document.getElementById('filter-btn').addEventListener('click', function() {
+                const platform = document.getElementById('platform-filter').value;
+                const limit = document.getElementById('limit-filter').value;
+                
+                // Build URL
+                let url = '/logs?';
+                if (platform) {
+                    url += `platform=${encodeURIComponent(platform)}&`;
+                }
+                url += `limit=${encodeURIComponent(limit)}`;
+                
+                window.location.href = url;
+            });
+        });
+    </script>
+</body>
+</html>

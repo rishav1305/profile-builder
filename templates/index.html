@@ -69,6 +69,7 @@
             <div class="col text-center">
                 <h1 class="display-4">Profile Builder AI Agent</h1>
                 <p class="lead">Automatically fill your professional profiles using AI and your portfolio data</p>
+                <a href="/logs" class="btn btn-outline-primary">View Profile Update Logs</a>
             </div>
         </div>
 
@@ -97,9 +98,19 @@
                         <form id="portfolio-form">
                             <div class="mb-3">
                                 <label for="portfolio-url" class="form-label">Portfolio URL</label>
-                                <input type="url" class="form-control" id="portfolio-url" value="https://rishavchatterjee.vercel.app/" required>
+                                <input type="url" class="form-control" id="portfolio-url" value="https://rishavchatterjee.com/" required>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="extract-btn">Extract Data</button>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="use-cache">
+                                <label class="form-check-label" for="use-cache">Use cached data (faster)</label>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" id="extract-btn">Extract Data</button>
+                                <button type="button" class="btn btn-outline-secondary" id="refresh-btn">Force Refresh</button>
+                            </div>
+                            <div class="mt-2" id="data-freshness" style="display: none;">
+                                <small class="text-muted">Last updated: <span id="last-updated">N/A</span></small>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -332,32 +343,79 @@
         // Handle portfolio form submission
         document.getElementById('portfolio-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            extractPortfolioData(false);
+        });
+
+        // Handle refresh button click
+        document.getElementById('refresh-btn').addEventListener('click', function() {
+            extractPortfolioData(true);
+        });
+
+        // Function to extract portfolio data
+        function extractPortfolioData(forceRefresh = false) {
             const portfolioUrl = document.getElementById('portfolio-url').value;
+            const useCache = document.getElementById('use-cache').checked && !forceRefresh;
             const extractBtn = document.getElementById('extract-btn');
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            // Disable buttons during extraction
             extractBtn.disabled = true;
+            refreshBtn.disabled = true;
             extractBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Extracting...';
             
-            const formData = new FormData();
-            formData.append('portfolio_url', portfolioUrl);
+            // Prepare request payload
+            const payload = {
+                portfolio_url: portfolioUrl,
+                use_cache: useCache,
+                force_refresh: forceRefresh
+            };
             
             fetch('/extract', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
             })
                 .then(response => response.json())
                 .then(data => {
+                    // Reset button states
+                    extractBtn.disabled = false;
+                    refreshBtn.disabled = false;
+                    extractBtn.innerHTML = 'Extract Data';
+                    
                     if (data.error) {
                         alert('Error: ' + data.error);
                         return;
+                    }
+                    
+                    // Display data freshness information
+                    const dataFreshnessEl = document.getElementById('data-freshness');
+                    const lastUpdatedEl = document.getElementById('last-updated');
+                    
+                    if (data.timestamp) {
+                        dataFreshnessEl.style.display = 'block';
+                        const timestamp = new Date(data.timestamp);
+                        lastUpdatedEl.textContent = timestamp.toLocaleString();
                     }
                     
                     portfolioData = data.data;
                     displayPortfolioData(portfolioData);
                     document.getElementById('portfolio-data-section').classList.remove('d-none');
                     document.getElementById('platforms-section').classList.remove('d-none');
+                    
+                    // Show toast message about data freshness
+                    if (data.message) {
+                        showToast(data.message);
+                    }
                 })
                 .catch(error => {
                     console.error('Error extracting data:', error);
+                    extractBtn.disabled = false;
+                    refreshBtn.disabled = false;
+                    extractBtn.innerHTML = 'Extract Data';
+                    alert('Error extracting data. Please try again.');
+                });
                     alert('An error occurred while extracting portfolio data.');
                 })
                 .finally(() => {
